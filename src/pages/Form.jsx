@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Joi from 'joi'
 import schema from '../schema'
 
+import 'animate.css/animate.min.css'
+
 export default function () {
     const [errors, setErrors] = useState([])
     const [name, setName] = useState('John')
@@ -11,7 +13,7 @@ export default function () {
     const [isSingle, setSingle] = useState(true)
 
     useEffect(() => {
-        const { error } = Joi.validate({ name, surname }, schema)
+        const { error } = Joi.validate({ name, surname }, schema, { abortEarly: false })
         if (error) {
             setErrors(error.details)
         } else {
@@ -25,9 +27,18 @@ export default function () {
         const isError = errors.find(each => each.path.includes(fieldName))
 
         if (isError) {
-            return 'input is-danger'
+            return 'input is-danger animated shake'
         } else {
             return 'input'
+        }
+    }
+
+    function errorMessage(fieldName) {
+        const error = errors.find(each => each.path.includes(fieldName))
+        if (error) {
+            return error.message
+        } else {
+            return ''
         }
     }
 
@@ -70,10 +81,12 @@ export default function () {
 
         <div className="field">
             <input name="name" onChange={handleChange} defaultValue={name} type="text" className={className('name')} />
+            <p className="help is-danger">{errorMessage('name')}</p>
         </div>
 
         <div className="field">
             <input name="surname" onChange={handleChange} defaultValue={surname} type="text" className={className('surname')} />
+            <p className="help is-danger">{errorMessage('surname')}</p>
         </div>
 
         <div className="field">
